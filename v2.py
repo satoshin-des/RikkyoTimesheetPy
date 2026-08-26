@@ -5,11 +5,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import keyboard
+import getpass
 
 LOGIN_URL: str = "https://s.rikkyo.ac.jp/shukkinbo"
 MAIN_URL: str = "https://shukkinbo.rikkyo.ac.jp/TimePro-VG/page/Ovg80100t.aspx"
 USER_ID: str = input("V-campus ID：")
-PASSWORD: str = input("password：")
+PASSWORD: str = getpass.getpass("password：")
 CONTENT: str = input("勤務内容を入力してください：")
 WEBDRIVER: int = int(input("使いたいウェブドライバを選択してください\n1: Chrome 2: Edge 3: FireFox\n"))
 WORK_START_TIME: str = "0900"
@@ -39,8 +40,7 @@ try:
     driver.find_element(By.ID, "login_button").click()
 
     wait = WebDriverWait(driver, 10)
-    iframe = wait.until(EC.presence_of_element_located((By.ID, "DataFrame")))
-    driver.switch_to.frame(iframe)
+    driver.switch_to.frame(wait.until(EC.presence_of_element_located((By.ID, "DataFrame"))))
     
     # ホバーメニューを出す
     parent_menu = driver.find_element(By.XPATH, "//td[text()='出勤簿入力']")
@@ -55,8 +55,7 @@ try:
     
     # ポップアップウィンドウのiframeに移動
     wait = WebDriverWait(driver, 10)
-    iframe = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "UI_Dialog_Frame")))
-    driver.switch_to.frame(iframe)
+    driver.switch_to.frame(wait.until(EC.presence_of_element_located((By.CLASS_NAME, "UI_Dialog_Frame"))))
     
     # OKボタンを押下
     driver.find_element(By.ID, "SuperCalendar1_btnOK").click()
@@ -64,16 +63,12 @@ try:
     driver.switch_to.default_content()
     
     wait = WebDriverWait(driver, 10)
-    iframe = wait.until(EC.presence_of_element_located((By.ID, "DataFrame")))
-    driver.switch_to.frame(iframe)
-    iframe = wait.until(EC.presence_of_element_located((By.ID, "DisplayArea")))
-    driver.switch_to.frame(iframe)
-    iframe = wait.until(EC.presence_of_element_located((By.ID, "ChangeView")))
-    driver.switch_to.frame(iframe)
+    driver.switch_to.frame(wait.until(EC.presence_of_element_located((By.ID, "DataFrame"))))
+    driver.switch_to.frame(wait.until(EC.presence_of_element_located((By.ID, "DisplayArea"))))
+    driver.switch_to.frame(wait.until(EC.presence_of_element_located((By.ID, "ChangeView"))))
     
     wait = WebDriverWait(driver, 10)
-    iframe = wait.until(EC.presence_of_element_located((By.XPATH, "//iframe[contains(@src, 'OVa80140tGridData.aspx')]")))
-    driver.switch_to.frame(iframe)
+    driver.switch_to.frame(wait.until(EC.presence_of_element_located((By.XPATH, "//iframe[contains(@src, 'OVa80140tGridData.aspx')]"))))
     activator = driver.find_element(By.CLASS_NAME, "BsmActivor")
 
     last_top = None
@@ -120,6 +115,9 @@ try:
 
                 last_top = current_top
                 last_left = current_left
+                
+        elif keyboard.is_pressed('q'):
+            break
 
         time.sleep(0.2)
     
